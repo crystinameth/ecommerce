@@ -7,6 +7,7 @@ import(
 	"github.com/crystinameth/ecommerce/routes"
 	"github.com/gin-gonic/gin"
 	"os"
+	"log"
 )
 
 func main(){
