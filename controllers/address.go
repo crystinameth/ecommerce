@@ -2,7 +2,10 @@ package controllers
 
 import (
 	"context"
-
+	"time"
+	"net/http"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/crystinameth/ecommerce/models"
 )
 
@@ -38,7 +41,7 @@ func DeleteAddress() gin.HandlerFunc{
 		var ctx, cancel = content.WithTimeOut(context.Background(), 100*time.Second)
 		defer cancel()
 		filter := bson.D{primitive.E{key:"_id", Value: usert_id}}
-		update := bson.D{{key:"$set", Value: bson.D{primitive.E{key:"address", Value:addresses}}}}
+		update := bson.D{{key:"$set", Value: bson.D{primitive.E{key:"address", Value: addresses}}}}
 		_, err = UserCollection.UpdateOne(ctx, filter, update)
 		if err != nil {
 			c.IndentedJSON(404, "Wrong command")
