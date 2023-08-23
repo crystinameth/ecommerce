@@ -121,7 +121,7 @@ func GetItemFromCart() gin.HandlerFunc{
 		defer cancel()
 
 		var filledcart models.User
-		err := UserCollection.FindOne(ctx, bson.D{primitive.E{key:"_id", Value: usert_id}}).Decode(&filledcart)
+		err := UserCollection.FindOne(ctx, bson.D{primitive.E{Key:"_id", Value: usert_id}}).Decode(&filledcart)
 
 		if err != nil {
 			log.Println(err)
@@ -129,9 +129,9 @@ func GetItemFromCart() gin.HandlerFunc{
 			return
 		}
 
-		filter_match := bson.D{{key:"$match", Value: bson.D{primitive.E{key:"_id", Value: usert_id}}}}
-		unwind := bson.D{{key:"$unwind", Value: bson.D{primitive.E{key:"path", Value: "$usercart"}}}}
-		grouping := bson.D{{key:"$group", Value: bson.D{primitive.E{key:"_id", Value: "$_id"},{key:"total", Value:bson.D{primitive.E{Key:"$sum", Value: "$usercart.price"}}}}}}
+		filter_match := bson.D{{Key:"$match", Value: bson.D{primitive.E{Key:"_id", Value: usert_id}}}}
+		unwind := bson.D{{Key:"$unwind", Value: bson.D{primitive.E{Key:"path", Value: "$usercart"}}}}
+		grouping := bson.D{{Key:"$group", Value: bson.D{primitive.E{Key:"_id", Value: "$_id"},{Key:"total", Value:bson.D{primitive.E{Key:"$sum", Value: "$usercart.price"}}}}}}
 		pointcursor, err := UserCollection.Aggregate(ctx,mongo.Pipeline{filter_match, unwind, grouping})
 	
 		if err != nil{
