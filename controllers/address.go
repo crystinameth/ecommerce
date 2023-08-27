@@ -2,13 +2,16 @@ package controllers
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"time"
-	"fmt"
+
 	"github.com/crystinameth/ecommerce/models"
+	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"gopkg.in/mgo.v2/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	
 )
 
 func AddAddress() gin.HandlerFunc{
@@ -92,7 +95,7 @@ func EditHomeAddress() gin.HandlerFunc{
 		if err := c.BindJSON(&editaddress); err != nil {
 			c.IndentedJSON(http.StatusBadRequest, err.Error())
 		}
-		var ctx, cancel = context.WithTimeOut(context.Background(), 100*time.Second)
+		var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
 		defer cancel()
 		filter := bson.D{primitive.E{Key:"_id", Value: usert_id}}
 		update := bson.D{{Key: "$set", Value: bson.D{primitive.E{Key:"address.0.house_name", Value: editaddress.House},{Key:"address.0.street_name", Value: editaddress.Street},{Key:"address.0.city_name", Value: editaddress.City},{Key:"address.0.pin_code", Value: editaddress.Pincode}}}}
@@ -126,7 +129,7 @@ func EditWorkAddress() gin.HandlerFunc{
 		if err := c.BindJSON(&editaddress); err != nil {
 			c.IndentedJSON(http.StatusBadRequest, err.Error())
 		}
-		var ctx, cancel = context.WithTimeOut(context.Background(), 100*time.Second)
+		var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
 		defer cancel()
 		filter := bson.D{primitive.E{Key:"_id", Value: usert_id}}
 		update := bson.D{{Key: "$set", Value: bson.D{primitive.E{Key:"address.1.house_name", Value: editaddress.House},{Key:"address.1.street_name", Value: editaddress.Street},{Key:"address.1.city_name", Value: editaddress.City},{Key:"address.1.pin_code", Value: editaddress.Pincode}}}}
@@ -158,7 +161,7 @@ func DeleteAddress() gin.HandlerFunc{
 			c.IndentedJSON(500, "Internal server error")
 		}
 
-		var ctx, cancel = context.WithTimeOut(context.Background(), 100*time.Second)
+		var ctx, cancel = context.WithTimeout(context.Background(), 100*time.Second)
 		defer cancel()
 		filter := bson.D{primitive.E{Key:"_id", Value: usert_id}}
 		update := bson.D{{Key:"$set", Value: bson.D{primitive.E{Key:"address", Value: addresses}}}}

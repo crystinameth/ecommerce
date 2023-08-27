@@ -8,6 +8,9 @@ import (
 	"github.com/crystinameth/ecommerce/database"
 	jwt "github.com/dgrijalva/jwt-go"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type SignedDetails struct{

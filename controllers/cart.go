@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/crystinameth/ecommerce/database"
+	"github.com/crystinameth/ecommerce/models"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -23,10 +24,10 @@ type Application struct {
 func NewApplication(prodCollection, userCollection *mongo.Collection) *Application {
 	return &Application{
 		prodCollection: prodCollection,
-		userCollection: userCollection
+		userCollection: userCollection,
 	}
 }
-func (app *Application) AddToCart() gin.Handler{
+func (app *Application) AddToCart() gin.HandlerFunc{
 	return func(c *gin.Context){
 		productQueryID := c.Query("id")
 		if productQueryID == ""{
@@ -58,7 +59,7 @@ func (app *Application) AddToCart() gin.Handler{
 
 		err = database.AddProductToCart(ctx, app.prodCollection, app.userCollection, productID, userQueryID)
 		if err != nil {
-			c.IndentedJSON(http.StatusInternalServer, err)
+			c.IndentedJSON(http.StatusInternalServerError, err)
 		}
 		c.IndentedJSON(200, "Successfully added to the cart")
 	}
@@ -95,10 +96,10 @@ func (app *Application) RemoveItem() gin.HandlerFunc{
 
 		defer cancel()
 
-		err = database.RemoveCartItem(ctx, app.prodCollection, app.UserCollection, productID, userQueryID)
+		err = database.RemoveCartItem(ctx, app.prodCollection, app.userCollection, productID, userQueryID)
 
 		if err != nil {
-			c.IndentedJSON(http.statusInternalServerError, err)
+			c.IndentedJSON(http.StatusInternalServerError, err)
 			return
 		}
         c.IndentedJSON(200, "Successfully removed item from cart")
@@ -140,7 +141,7 @@ func GetItemFromCart() gin.HandlerFunc{
 		var listing []bson.M
 		if err = pointcursor.All(ctx, &listing); err != nil {
 			log.Println(err)
-			c.AbortWithStatus(http.StatusInternalServer)
+			c.AbortWithStatus(http.StatusInternalServerError)
 		}
 		for _, json := range listing{
 			c.IndentedJSON(200, json["total"])
@@ -169,7 +170,7 @@ func (app *Application) BuyFromCart() gin.HandlerFunc{
 		c.IndentedJSON(http.StatusInternalServerError, err)
 	}
 
-	c.IndentedJSON("successfully placed the order")
+	c.IndentedJSON(200,"successfully placed the order")
 }
 
 func (app *Application) InstantBuy() gin.HandlerFunc{
