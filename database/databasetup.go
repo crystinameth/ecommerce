@@ -20,7 +20,6 @@ import (
 	}
 */
 
-	//var client *mongo.Client
 
 	bsonOpts := &options.BSONOptions{
 		UseJSONStructTags: true,
