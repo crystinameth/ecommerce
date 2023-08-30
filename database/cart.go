@@ -7,9 +7,9 @@ import (
 	"time"
 
 	"github.com/crystinameth/ecommerce/models"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	"gopkg.in/mgo.v2/bson"
 )
 
 var(
@@ -29,7 +29,7 @@ func AddProductToCart(ctx context.Context, prodCollection, userCollection *mongo
 		log.Println(err)
 		return ErrCantFindProduct
 	}
-	var productCart []models.ProductUser
+	var productcart []models.ProductUser
 	err = searchfromdb.All(ctx, &productcart)
 	if err != nil {
 		log.Println(err)
@@ -43,9 +43,8 @@ func AddProductToCart(ctx context.Context, prodCollection, userCollection *mongo
 	}
 
 	filter := bson.D{primitive.E{Key: "_id", Value: id}}
-	update := bson.D{{Key:"$push", Value: bson.D{primitive.E{Key:"usercart", Value: bson.D{Key:"$each", Value:productCart}}}}}
-
-	_, err := userCollection.UpdateOne(ctx, filter, update)
+	update := bson.D{{Key: "$push", Value: bson.D{primitive.E{Key: "usercart", Value: bson.D{{Key: "$each", Value: productcart}}}}}}
+	_, err = userCollection.UpdateOne(ctx, filter, update)
 	if err != nil {
 		return ErrCantUpdateUser
 	}
@@ -59,7 +58,7 @@ func RemoveCartItem(ctx context.Context, prodCollection, userCollection *mongo.C
 		return ErrUserIdIsNotValid
 	}
 
-	filter := bson.D(primitive.E{Key:"_id", Value: id})
+	filter := bson.D{primitive.E{Key: "_id", Value: id}}
 	update := bson.M{"$pull":bson.M{"usercart": bson.M{"_id":productID}}}
 	_, err = userCollection.UpdateMany(ctx, filter, update)
 	if err != nil {
@@ -87,7 +86,7 @@ func BuyItemFromCart(ctx context.Context, userCollection *mongo.Collection, user
 	ordercart.Payment_Method.COD =true
 
 	unwind := bson.D{{Key:"$unwind", Value:bson.D{primitive.E{Key:"path", Value:"$usercart"}}}}
-	grouping := bson.D{{key:"$group", Value:bson.D{primitive.E{Key:"_id", Value:"$_id"}, {Key:"total", Value: bson.D{primitive.E{Key:"$sum", Value:"$usercart.price"}}}}}}
+	grouping := bson.D{{Key: "$group", Value:bson.D{primitive.E{Key:"_id", Value:"$_id"}, {Key:"total", Value: bson.D{primitive.E{Key:"$sum", Value:"$usercart.price"}}}}}}
 	currentresults, err := userCollection.Aggregate(ctx, mongo.Pipeline{unwind, grouping})
 	ctx.Done()
 	if err != nil {
@@ -111,19 +110,19 @@ func BuyItemFromCart(ctx context.Context, userCollection *mongo.Collection, user
 
 	filter := bson.D{primitive.E{Key:"_id", Value: id}}
 	update := bson.D{{Key:"$push", Value: bson.D{primitive.E{Key:"orders", Value: ordercart}}}}
-	_, err := userCollection.UpdateMany(ctx, filter, update)
+	_, err = userCollection.UpdateMany(ctx, filter, update)
 	if err != nil {
 		log.Println(err)
 	}
 
-	err := userCollection.FindOne(ctx, bson.D{primitive.E{Key:"_id", Value: id}}).Decode(&getcartitems)
+	err = userCollection.FindOne(ctx, bson.D{primitive.E{Key:"_id", Value: id}}).Decode(&getcartitems)
 	if err != nil {
 		log.Println(err)
 	}
 
 	filter2 := bson.D{primitive.E{Key:"_id", Value:id}}
 	update2 := bson.M{"$push":bson.M{"orders.$[].order_list": bson.M{"$each":getcartitems.UserCart}}}
-	_, err := userCollection.UpdateOne(ctx, filter2, update2)
+	_, err = userCollection.UpdateOne(ctx, filter2, update2)
 	if err != nil {
 		log.Println(err)
 	}
@@ -162,7 +161,7 @@ func InstantBuyer(ctx context.Context, prodCollection, userCollection *mongo.Col
 
 	filter := bson.D{primitive.E{Key:"_id", Value: id}}
 	update := bson.D{{Key:"$push", Value: bson.D{primitive.E{Key:"orders", Value: orders_detail}}}}
-	_, err := userCollection.UpdateOne(ctx,filter,update)
+	_, err = userCollection.UpdateOne(ctx,filter,update)
 	if err != nil{
 		log.Println(err)
 	}

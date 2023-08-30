@@ -11,21 +11,37 @@ import (
 
  func DBSet() *mongo.Client{
 
+/* 
+	Deprecated
 	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb://localhost:27017"))
 
 	if err != nil{
          log.Fatal(err)
 	}
+*/
 
+	//var client *mongo.Client
+
+	bsonOpts := &options.BSONOptions{
+		UseJSONStructTags: true,
+		NilMapAsEmpty:     true,
+		NilSliceAsEmpty:   true,
+	}
+
+	clientOpts := options.Client().ApplyURI("mongodb://localhost:27017").SetBSONOptions(bsonOpts)
     ctx,cancel := context.WithTimeout(context.Background(), 10*time.Second)
 
 	defer cancel()
 
-	err = client.Connect(ctx)
+	client, err := mongo.Connect(ctx, clientOpts)
 	if err != nil {
 		log.Fatal(err)
 	}
-
+	defer func() {
+		if err := client.Disconnect(context.TODO()); err != nil {
+			panic(err)
+		}
+	}()
 	client.Ping(context.TODO(),nil)
 	if err != nil {
 		log.Println("failed to connect to mongodb :(")

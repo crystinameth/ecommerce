@@ -83,10 +83,10 @@ func UpdateAllTokens(signedtoken string, signedrefreshtoken string, userid strin
 
 	var updateobj primitive.D
 
-	updateobj = append (updateobj,bson.E{key:"token", Value: signedtoken})
-	updateobj = append (updateobj,bson.E{key:"refresh_token", Value: signedrefreshtoken})
+	updateobj = append (updateobj, bson.E{Key: "token", Value: signedtoken})
+	updateobj = append (updateobj,bson.E{Key: "refresh_token", Value: signedrefreshtoken})
 	updated_at, _ := time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
-	updateobj = append (updateobj, bson.E{key:"updatedat", Value: updated_at})
+updateobj = append (updateobj, bson.E{Key: "updatedat", Value: updated_at})
 
 	upsert := true //upsert flag for mongodb
 
@@ -95,7 +95,7 @@ func UpdateAllTokens(signedtoken string, signedrefreshtoken string, userid strin
 		Upsert: &upsert,
 	}
 
-	_,err := UserData.UpdateOne(ctx, filter, bson.D{{key:"$set", Value: updateobj}}, &opt)
+	_,err := UserData.UpdateOne(ctx, filter, bson.D{{Key: "$set", Value: updateobj}}, &opt)
 	defer cancel()
 
 	if err != nil{

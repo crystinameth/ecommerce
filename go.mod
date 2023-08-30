@@ -8,7 +8,6 @@ require (
 	github.com/go-playground/validator/v10 v10.15.1
 	go.mongodb.org/mongo-driver v1.12.1
 	golang.org/x/crypto v0.12.0
-	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
 )
 
 require (
@@ -41,6 +40,5 @@ require (
 	golang.org/x/sys v0.11.0 // indirect
 	golang.org/x/text v0.12.0 // indirect
 	google.golang.org/protobuf v1.30.0 // indirect
-	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
