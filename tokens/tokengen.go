@@ -4,7 +4,7 @@ import (
 	"time"
 	"os"
 	"log"
-
+	"context"
 	"github.com/crystinameth/ecommerce/database"
 	jwt "github.com/dgrijalva/jwt-go"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -21,7 +21,7 @@ type SignedDetails struct{
 	jwt.StandardClaims
 }
 
-var UserData *mongo.Collection = database.userData(database.Client, "Users")
+var UserData *mongo.Collection = database.UserData(database.Client, "Users")
 var SECRET_KEY = os.Getenv("SECRET_KEY")
 
 func TokenGenerator(email string, firstname string, lastname string, uid string)(signedtoken string, signedrefreshtoken string, err error){
@@ -71,15 +71,15 @@ func ValidateToken(signedtoken string)(claims *SignedDetails, msg string){
 		return
 	}
 
-	claims.ExpiresAt < time.Now().Local().Unix(){
+	if claims.ExpiresAt < time.Now().Local().Unix(){
 		msg = "the token is already expired"
 		return
 	}
-	return claim, msg
+	return claims, msg
 }
 
 func UpdateAllTokens(signedtoken string, signedrefreshtoken string, userid string){
-	var ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 100*time.Second)
 
 	var updateobj primitive.D
 

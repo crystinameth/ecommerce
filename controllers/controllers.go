@@ -10,7 +10,6 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/crystinameth/ecommerce/models"
 	"github.com/crystinameth/ecommerce/database"
-	"gopkg.in/mgo.v2/bson"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
 	generate "github.com/crystinameth/ecommerce/tokens"
@@ -135,7 +134,7 @@ func Login() gin.HandlerFunc {
 		defer cancel()
 
 		if !PasswordIsValid {
-			c.JSON{http.StatusInternalServerError, gin.H{"error": msg}}
+			c.JSON(http.StatusInternalServerError, gin.H{"error": msg})
 			fmt.Println(msg)
 			return
 		}
@@ -159,7 +158,7 @@ func ProductViewerAdmin() gin.HandlerFunc{
 		}
 		products.Product_ID = primitive.NewObjectID()
 		_, anyerr := ProductCollection.InsertOne(ctx, products)
-		anyerr != nil {
+		if anyerr != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error":"Not Created"})
 			return
 		}
@@ -168,7 +167,6 @@ func ProductViewerAdmin() gin.HandlerFunc{
 	}
 }
 
-}
 func SearchProduct() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var productlist []models.Product
