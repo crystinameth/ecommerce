@@ -1,16 +1,17 @@
 package token
 
 import (
-	"time"
-	"os"
-	"log"
 	"context"
+	"log"
+	"os"
+	"time"
+
 	"github.com/crystinameth/ecommerce/database"
 	jwt "github.com/dgrijalva/jwt-go"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type SignedDetails struct{
@@ -95,7 +96,7 @@ updateobj = append (updateobj, bson.E{Key: "updatedat", Value: updated_at})
 		Upsert: &upsert,
 	}
 
-	_,err := UserData.UpdateOne(ctx, filter, bson.D{{Key: "$set", Value: updateobj}}, &opt)
+	_, err := UserData.UpdateOne(ctx, filter, bson.D{{Key: "$set", Value: updateobj}}, &opt)
 	defer cancel()
 
 	if err != nil{
